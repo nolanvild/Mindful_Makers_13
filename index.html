@@ -200,11 +200,36 @@
     justify-content: center;
     border: 0.5px solid var(--border);
   }
-  .plant-thumb svg { width: 100%; height: 100%; }
+  .plant-thumb svg, .plant-thumb img { width: 100%; height: 100%; object-fit: cover; }
   .plant-info { flex: 1; }
   .plant-info h3 { font-size: 15px; font-weight: 500; color: var(--text-primary); }
   .plant-info .sci { font-size: 12px; color: var(--text-secondary); font-style: italic; margin-top: 1px; }
   .tags-inline { margin-top: 6px; }
+
+  .sighting-card { padding: 14px 0; border-bottom: 0.5px solid var(--border); }
+  .sighting-card:last-child { border-bottom: none; }
+  .sighting-head { display: flex; align-items: center; gap: 10px; }
+  .sighting-avatar {
+    width: 36px; height: 36px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 600; color: #fff; flex-shrink: 0;
+  }
+  .sighting-who { flex: 1; }
+  .sighting-who h3 { font-size: 14px; font-weight: 500; color: var(--text-primary); }
+  .sighting-who p { font-size: 11px; color: var(--text-secondary); margin-top: 1px; }
+  .sighting-body {
+    display: flex; align-items: center; gap: 12px;
+    margin-top: 10px; padding: 10px; border-radius: 14px;
+    background: var(--bg-secondary); cursor: pointer; transition: opacity 0.15s;
+  }
+  .sighting-body:active { opacity: 0.6; }
+  .sighting-thumb {
+    width: 52px; height: 52px; border-radius: 12px; overflow: hidden;
+    flex-shrink: 0; background: var(--bg-primary); border: 0.5px solid var(--border);
+  }
+  .sighting-thumb svg { width: 100%; height: 100%; }
+  .sighting-info h4 { font-size: 14px; font-weight: 500; color: var(--text-primary); }
+  .sighting-info p { font-size: 12px; color: var(--text-secondary); margin-top: 1px; }
 
   .tag {
     display: inline-block;
@@ -318,6 +343,8 @@
     border-radius: 24px 24px 0 0;
     padding: 24px 20px 32px;
     width: 100%;
+    max-height: 85vh;
+    overflow-y: auto;
   }
   .modal-sheet h3 { font-size: 17px; font-weight: 600; color: var(--text-primary); margin-bottom: 6px; }
   .modal-sheet p { font-size: 13px; color: var(--text-secondary); margin-bottom: 20px; }
@@ -398,6 +425,34 @@
   }
   .btn-retake { background: var(--bg-secondary); color: var(--text-primary); }
   .btn-use { background: var(--green); color: #fff; border: none; }
+
+  .info-form { display: flex; flex-direction: column; gap: 18px; }
+  .info-field label {
+    display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.8px;
+    color: var(--text-secondary); font-weight: 500; margin-bottom: 6px;
+  }
+  .info-field input[type="text"] {
+    width: 100%; padding: 11px 12px; border-radius: 12px;
+    border: 0.5px solid var(--border-strong); background: var(--bg-secondary);
+    font-size: 15px; color: var(--text-primary); font-family: inherit;
+  }
+  .info-field input[type="text"]:focus { outline: 2px solid var(--green); outline-offset: -1px; }
+  .chip-list { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip-toggle {
+    border: 0.5px solid var(--border-strong); background: var(--bg-secondary);
+    color: var(--text-primary); border-radius: 20px; padding: 7px 14px;
+    font-size: 13px; cursor: pointer; font-family: inherit; transition: all 0.15s;
+  }
+  .chip-toggle.selected { background: var(--green); color: #fff; border-color: var(--green); }
+  .chip-add {
+    border: 1px dashed var(--border-strong); background: none; color: var(--text-secondary);
+    border-radius: 20px; padding: 7px 14px; font-size: 13px; cursor: pointer; font-family: inherit;
+  }
+  .info-actions { display: flex; gap: 10px; }
+  .info-actions button {
+    flex: 1; padding: 13px; border-radius: 14px; font-size: 14px; font-weight: 500;
+    cursor: pointer; font-family: inherit; border: 0.5px solid var(--border);
+  }
 </style>
 </head>
 <body>
@@ -448,7 +503,7 @@
       <button class="nav-btn" onclick="go('screen-logbook')"><i class="ti ti-books" aria-hidden="true"></i>Logbook</button>
       <div class="cam-wrap"><button class="cam-btn" onclick="openCamera()" aria-label="Take photo"><i class="ti ti-camera" aria-hidden="true"></i></button></div>
       <button class="nav-btn" onclick="go('screen-logbook')"><i class="ti ti-map-pin" aria-hidden="true"></i>Places</button>
-      <button class="nav-btn"><i class="ti ti-users" aria-hidden="true"></i>Social</button>
+      <button class="nav-btn" onclick="go('screen-social')"><i class="ti ti-users" aria-hidden="true"></i>Social</button>
     </nav>
   </div>
 
@@ -481,7 +536,7 @@
       <button class="nav-btn active"><i class="ti ti-books" aria-hidden="true"></i>Logbook</button>
       <div class="cam-wrap"><button class="cam-btn" onclick="openCamera()" aria-label="Take photo"><i class="ti ti-camera" aria-hidden="true"></i></button></div>
       <button class="nav-btn"><i class="ti ti-map-pin" aria-hidden="true"></i>Places</button>
-      <button class="nav-btn"><i class="ti ti-users" aria-hidden="true"></i>Social</button>
+      <button class="nav-btn" onclick="go('screen-social')"><i class="ti ti-users" aria-hidden="true"></i>Social</button>
     </nav>
   </div>
 
@@ -498,7 +553,23 @@
       <button class="nav-btn active"><i class="ti ti-books" aria-hidden="true"></i>Logbook</button>
       <div class="cam-wrap"><button class="cam-btn" onclick="openCamera()" aria-label="Take photo"><i class="ti ti-camera" aria-hidden="true"></i></button></div>
       <button class="nav-btn"><i class="ti ti-map-pin" aria-hidden="true"></i>Places</button>
-      <button class="nav-btn"><i class="ti ti-users" aria-hidden="true"></i>Social</button>
+      <button class="nav-btn" onclick="go('screen-social')"><i class="ti ti-users" aria-hidden="true"></i>Social</button>
+    </nav>
+  </div>
+
+  <!-- Social feed screen -->
+  <div class="screen" id="screen-social">
+    <div class="top-bar">
+      <h1>Social</h1>
+      <p>Friends' recent sightings</p>
+    </div>
+    <div class="list-scroll" id="social-feed"></div>
+    <nav class="bottom-nav">
+      <button class="nav-btn" onclick="go('screen-home')"><i class="ti ti-layout-grid" aria-hidden="true"></i>Home</button>
+      <button class="nav-btn" onclick="go('screen-logbook')"><i class="ti ti-books" aria-hidden="true"></i>Logbook</button>
+      <div class="cam-wrap"><button class="cam-btn" onclick="openCamera()" aria-label="Take photo"><i class="ti ti-camera" aria-hidden="true"></i></button></div>
+      <button class="nav-btn" onclick="go('screen-logbook')"><i class="ti ti-map-pin" aria-hidden="true"></i>Places</button>
+      <button class="nav-btn active" onclick="go('screen-social')"><i class="ti ti-users" aria-hidden="true"></i>Social</button>
     </nav>
   </div>
 
@@ -511,7 +582,7 @@
       <div class="detail-circle" id="detail-circle">
         <svg id="detail-svg" viewBox="0 0 100 100"></svg>
       </div>
-      <span class="identified-badge"><i class="ti ti-sparkles" aria-hidden="true" style="font-size:12px;vertical-align:-1px;margin-right:3px;"></i>AI Identified</span>
+      <span class="identified-badge" id="detail-badge"><i class="ti ti-sparkles" aria-hidden="true" style="font-size:12px;vertical-align:-1px;margin-right:3px;"></i>AI Identified</span>
     </div>
     <div class="detail-body">
       <h2 id="detail-name"></h2>
@@ -566,6 +637,29 @@
         <div class="preview-actions">
           <button class="btn-retake" onclick="retakePhoto()">Retake</button>
           <button class="btn-use" onclick="usePhoto()">Use photo</button>
+        </div>
+      </div>
+
+      <div id="modal-info" style="display:none;">
+        <h3>Plant details</h3>
+        <p>Name it and sort it into your collections and tags.</p>
+        <div class="info-form">
+          <div class="info-field">
+            <label for="info-name">Plant name</label>
+            <input type="text" id="info-name" placeholder="e.g. Red rose">
+          </div>
+          <div class="info-field">
+            <label>Collections</label>
+            <div class="chip-list" id="info-collections"></div>
+          </div>
+          <div class="info-field">
+            <label>Tags</label>
+            <div class="chip-list" id="info-tags"></div>
+          </div>
+          <div class="info-actions">
+            <button class="btn-retake" onclick="cancelInfoForm()">Cancel</button>
+            <button class="btn-use" onclick="savePlantInfo()">Save plant</button>
+          </div>
         </div>
       </div>
 
@@ -667,6 +761,14 @@ const locationPlants = {
   'San Fran': ['Lavender','California poppy','Bird of paradise'],
 };
 
+const sightings = [
+  { friend: 'Maya Chen', initials: 'MC', color: '#D4537E', plant: 'Lavender', loc: 'San Fran', time: '2h ago' },
+  { friend: 'Jordan Lee', initials: 'JL', color: '#534AB7', plant: 'Coneflower', loc: 'Cambridge', time: '5h ago' },
+  { friend: 'Priya Singh', initials: 'PS', color: '#BA7517', plant: 'Bird of paradise', loc: 'San Fran', time: '1d ago' },
+  { friend: 'Sam Okafor', initials: 'SO', color: '#1D9E75', plant: 'Climbing hydrangea', loc: 'Boston', time: '2d ago' },
+];
+
+let photoEntries = [];
 let prevScreen = 'screen-home';
 
 function go(screenId, arg) {
@@ -676,6 +778,25 @@ function go(screenId, arg) {
 
   if (screenId === 'screen-location') renderLocation(arg);
   if (screenId === 'screen-detail') renderDetail(arg);
+  if (screenId === 'screen-social') renderSocial();
+}
+
+function renderSocial() {
+  const el = document.getElementById('social-feed');
+  el.innerHTML = sightings.map(s => {
+    const p = plants[s.plant] || {};
+    const loc = s.loc === 'San Fran' ? 'San Francisco' : s.loc;
+    return `<div class="sighting-card">
+      <div class="sighting-head">
+        <div class="sighting-avatar" style="background:${s.color}">${s.initials}</div>
+        <div class="sighting-who"><h3>${s.friend}</h3><p>${s.time}</p></div>
+      </div>
+      <div class="sighting-body" onclick="go('screen-detail','${s.plant}'); document.getElementById('detail-back-btn').onclick = () => go('screen-social');">
+        <div class="sighting-thumb"><svg viewBox="0 0 100 100">${p.svg || ''}</svg></div>
+        <div class="sighting-info"><h4>${s.plant}</h4><p>${loc}</p></div>
+      </div>
+    </div>`;
+  }).join('');
 }
 
 function renderLocation(loc) {
@@ -688,10 +809,10 @@ function renderLocation(loc) {
   const el = document.getElementById('loc-list');
   el.innerHTML = names.map(name => {
     const p = plants[name] || {};
-    const thumbSvg = p.svg || '';
+    const thumb = p.photo ? `<img src="${p.photo}" alt="${name} photo">` : `<svg viewBox="0 0 100 100">${p.svg || ''}</svg>`;
     const tags = (p.tags || []).slice(0, 2).map(([t, cls]) => `<span class="tag ${cls}">${t}</span>`).join('');
     return `<div class="plant-row" onclick="go('screen-detail','${name}'); document.getElementById('detail-back-btn').onclick = () => go('screen-location','${loc}');">
-      <div class="plant-thumb"><svg viewBox="0 0 100 100">${thumbSvg}</svg></div>
+      <div class="plant-thumb">${thumb}</div>
       <div class="plant-info">
         <h3>${name}</h3>
         <p class="sci">${p.sci || ''}</p>
@@ -709,19 +830,27 @@ function renderDetail(name) {
   if (!p) return;
 
   document.getElementById('detail-name').textContent = name;
-  document.getElementById('detail-sci').textContent = p.sci;
+  document.getElementById('detail-sci').textContent = p.sci || '';
   document.getElementById('detail-loc').textContent = p.loc === 'San Fran' ? 'San Francisco' : p.loc;
-  document.getElementById('detail-about').textContent = p.about;
-  document.getElementById('detail-care').textContent = p.care;
-  document.getElementById('detail-svg').innerHTML = p.svg;
+  document.getElementById('detail-about').textContent = p.about || 'No notes yet.';
+  document.getElementById('detail-care').textContent = p.care || 'No care notes yet.';
 
   const circle = document.getElementById('detail-circle');
-  circle.style.background = p.heroBg;
-  circle.style.borderColor = p.heroBorder;
+  if (p.photo) {
+    circle.innerHTML = `<img src="${p.photo}" alt="${name} photo" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
+    circle.style.background = 'none';
+    circle.style.borderColor = 'transparent';
+  } else {
+    circle.innerHTML = `<svg id="detail-svg" viewBox="0 0 100 100">${p.svg || ''}</svg>`;
+    circle.style.background = p.heroBg;
+    circle.style.borderColor = p.heroBorder;
+  }
 
   document.getElementById('detail-tags').innerHTML = (p.tags || []).map(([t, cls]) =>
     `<span class="tag ${cls}">${t}</span>`
   ).join('');
+
+  document.getElementById('detail-badge').style.display = p.sci ? '' : 'none';
 }
 
 let cameraStream = null;
@@ -741,11 +870,13 @@ function closeCamera(e) {
 
 function closeCameraModal() {
   stopCameraStream();
+  pendingPhotoDataUrl = null;
+  pendingPhotoSource = null;
   document.getElementById('camera-modal').classList.remove('open');
 }
 
 function showModalStep(stepId) {
-  ['modal-choose', 'modal-camera', 'modal-preview'].forEach(id => {
+  ['modal-choose', 'modal-camera', 'modal-preview', 'modal-info'].forEach(id => {
     document.getElementById(id).style.display = id === stepId ? '' : 'none';
   });
 }
@@ -807,10 +938,113 @@ function retakePhoto() {
   }
 }
 
+const tagPalette = ['tag-green', 'tag-pink', 'tag-amber', 'tag-purple'];
+const baseTags = ['Perennial', 'Annual', 'Pollinator', 'Native', 'Fragrant', 'Drought-tolerant', 'Climber', 'Shade-tolerant'];
+let customTags = [];
+let customCollections = [];
+let selectedCollections = new Set();
+let selectedTags = new Set();
+
 function usePhoto() {
-  if (pendingPhotoDataUrl) addPhotoCard(pendingPhotoDataUrl);
-  pendingPhotoDataUrl = null;
-  pendingPhotoSource = null;
+  if (!pendingPhotoDataUrl) return;
+  openInfoForm();
+}
+
+function openInfoForm() {
+  document.getElementById('info-name').value = '';
+  selectedCollections = new Set();
+  selectedTags = new Set();
+  renderCollectionChips();
+  renderTagChips();
+  showModalStep('modal-info');
+}
+
+function allCollections() {
+  return [...new Set([...Object.keys(locationPlants), ...customCollections])];
+}
+
+function allTags() {
+  return [...new Set([...baseTags, ...customTags])];
+}
+
+function renderCollectionChips() {
+  const el = document.getElementById('info-collections');
+  el.innerHTML = allCollections().map(c => {
+    const label = c === 'San Fran' ? 'San Francisco' : c;
+    return `<button type="button" class="chip-toggle${selectedCollections.has(c) ? ' selected' : ''}" onclick="toggleChip(selectedCollections, '${c}', renderCollectionChips)">${label}</button>`;
+  }).join('') + `<button type="button" class="chip-add" onclick="addCustomCollection()">+ New</button>`;
+}
+
+function renderTagChips() {
+  const el = document.getElementById('info-tags');
+  el.innerHTML = allTags().map(t => {
+    return `<button type="button" class="chip-toggle${selectedTags.has(t) ? ' selected' : ''}" onclick="toggleChip(selectedTags, '${t}', renderTagChips)">${t}</button>`;
+  }).join('') + `<button type="button" class="chip-add" onclick="addCustomTag()">+ New</button>`;
+}
+
+function toggleChip(set, value, rerender) {
+  if (set.has(value)) set.delete(value); else set.add(value);
+  rerender();
+}
+
+function addCustomCollection() {
+  const name = (prompt('New collection name:') || '').trim();
+  if (!name) return;
+  if (!allCollections().includes(name)) customCollections.push(name);
+  selectedCollections.add(name);
+  renderCollectionChips();
+}
+
+function addCustomTag() {
+  const name = (prompt('New tag name:') || '').trim();
+  if (!name) return;
+  if (!allTags().includes(name)) customTags.push(name);
+  selectedTags.add(name);
+  renderTagChips();
+}
+
+function cancelInfoForm() {
+  closeCameraModal();
+}
+
+function savePlantInfo() {
+  const name = document.getElementById('info-name').value.trim();
+  if (!name) {
+    document.getElementById('info-name').focus();
+    return;
+  }
+
+  const collections = [...selectedCollections];
+  const tags = [...selectedTags];
+
+  const entry = {
+    photoId: 'photo_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8),
+    name,
+    dataUrl: pendingPhotoDataUrl,
+    source: pendingPhotoSource,
+    collections,
+    tags,
+    uploadedAt: new Date().toISOString(),
+  };
+  photoEntries.push(entry);
+
+  plants[name] = {
+    sci: '',
+    loc: collections[0] || 'Unsorted',
+    tags: tags.map((t, i) => [t, tagPalette[i % tagPalette.length]]),
+    about: '',
+    care: '',
+    photo: entry.dataUrl,
+    heroBg: 'var(--bg-secondary)',
+    heroBorder: 'var(--border)',
+  };
+
+  collections.forEach(c => {
+    if (!locationPlants[c]) locationPlants[c] = [];
+    locationPlants[c].unshift(name);
+  });
+
+  addPhotoCard(entry);
   closeCameraModal();
 }
 
@@ -828,14 +1062,20 @@ document.getElementById('upload-input').addEventListener('change', (e) => {
   e.target.value = '';
 });
 
-function addPhotoCard(dataUrl) {
+function addPhotoCard(entry) {
   const grid = document.querySelector('#screen-home .photo-grid');
   const card = document.createElement('div');
   card.className = 'photo-card';
-  const today = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  card.dataset.photoId = entry.photoId;
+  card.onclick = () => {
+    go('screen-detail', entry.name);
+    document.getElementById('detail-back-btn').onclick = () => go('screen-home');
+  };
+  const date = new Date(entry.uploadedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  const loc = entry.collections[0] === 'San Fran' ? 'San Francisco' : (entry.collections[0] || 'Unsorted');
   card.innerHTML = `
-    <img src="${dataUrl}" alt="New plant photo">
-    <div class="photo-label"><span>New plant</span><small>Identifying… · ${today}</small></div>
+    <img src="${entry.dataUrl}" alt="${entry.name} photo">
+    <div class="photo-label"><span>${entry.name}</span><small>${loc} · ${date}</small></div>
   `;
   grid.insertBefore(card, grid.firstChild);
 }
