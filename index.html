@@ -169,7 +169,9 @@
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+    overflow: hidden;
   }
+  .list-icon img { width: 100%; height: 100%; object-fit: cover; }
   .list-icon i { font-size: 22px; color: var(--green); }
   .list-text { flex: 1; }
   .list-text h3 { font-size: 16px; font-weight: 500; color: var(--text-primary); }
@@ -251,6 +253,15 @@
     background: var(--bg-secondary);
     flex-shrink: 0;
     position: relative;
+    overflow: hidden;
+  }
+
+  .detail-photo {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
 
   .detail-circle {
@@ -453,14 +464,119 @@
     flex: 1; padding: 13px; border-radius: 14px; font-size: 14px; font-weight: 500;
     cursor: pointer; font-family: inherit; border: 0.5px solid var(--border);
   }
+
+  /* Auth (login / signup) screen */
+  .auth-wrap {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 0 32px;
+  }
+  .auth-logo {
+    width: 68px;
+    height: 68px;
+    border-radius: 22px;
+    background: var(--green-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 22px;
+  }
+  .auth-logo i { font-size: 36px; color: var(--green); }
+  .auth-wrap h1 { font-size: 26px; font-weight: 600; color: var(--text-primary); letter-spacing: -0.4px; }
+  .auth-wrap #auth-subtitle { font-size: 14px; color: var(--text-secondary); margin-top: 4px; margin-bottom: 26px; }
+
+  .auth-form { display: flex; flex-direction: column; gap: 12px; }
+  .auth-form input {
+    width: 100%;
+    padding: 14px 16px;
+    font-size: 15px;
+    font-family: inherit;
+    color: var(--text-primary);
+    background: var(--bg-secondary);
+    border: 0.5px solid var(--border-strong);
+    border-radius: 14px;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .auth-form input::placeholder { color: var(--text-secondary); }
+  .auth-form input:focus { border-color: var(--green); }
+
+  .auth-submit {
+    width: 100%;
+    padding: 15px;
+    margin-top: 4px;
+    font-size: 16px;
+    font-weight: 600;
+    font-family: inherit;
+    color: #fff;
+    background: var(--green);
+    border: none;
+    border-radius: 14px;
+    cursor: pointer;
+    transition: opacity 0.15s, transform 0.15s;
+  }
+  .auth-submit:active { transform: scale(0.98); }
+  .auth-submit:disabled { opacity: 0.55; cursor: default; }
+
+  .auth-msg { font-size: 13px; line-height: 1.5; min-height: 18px; padding: 0 2px; }
+  .auth-msg-error { color: #C0392B; }
+  .auth-msg-info { color: var(--green-text); }
+
+  .auth-toggle { margin-top: 22px; text-align: center; font-size: 14px; color: var(--text-secondary); }
+  .auth-toggle button {
+    background: none;
+    border: none;
+    color: var(--green);
+    font-size: 14px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    padding: 0 0 0 4px;
+  }
+
+  .icon-btn {
+    background: none;
+    border: 0.5px solid var(--border-strong);
+    border-radius: 10px;
+    padding: 6px 9px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    font-family: inherit;
+    transition: background 0.15s;
+  }
+  .icon-btn:hover { background: var(--bg-secondary); }
+  .icon-btn i { font-size: 16px; }
 </style>
 </head>
 <body>
 
 <div class="phone">
 
+  <!-- Auth (login / signup) screen -->
+  <div class="screen active" id="screen-auth">
+    <div class="auth-wrap">
+      <div class="auth-logo"><i class="ti ti-plant-2" aria-hidden="true"></i></div>
+      <h1>Plant Logbook</h1>
+      <p id="auth-subtitle">Sign in to your garden</p>
+      <form class="auth-form" id="auth-form" onsubmit="return submitAuth(event)">
+        <input id="auth-email" type="email" placeholder="Email" required autocomplete="email">
+        <input id="auth-password" type="password" placeholder="Password" required minlength="6" autocomplete="current-password">
+        <div class="auth-msg" id="auth-msg" role="alert"></div>
+        <button class="auth-submit" type="submit" id="auth-submit-btn">Sign in</button>
+      </form>
+      <p class="auth-toggle">
+        <span id="auth-toggle-text">Don't have an account?</span>
+        <button type="button" id="auth-toggle-btn" onclick="toggleAuthMode()">Sign up</button>
+      </p>
+    </div>
+  </div>
+
   <!-- Home screen -->
-  <div class="screen active" id="screen-home">
+  <div class="screen" id="screen-home">
     <div class="top-bar">
       <div class="top-row">
         <div>
@@ -472,32 +588,7 @@
         </button>
       </div>
     </div>
-    <div class="photo-grid">
-      <div class="photo-card" onclick="go('screen-detail','Red rose')">
-        <svg viewBox="0 0 200 200"><circle cx="100" cy="100" r="100" fill="#FBEAF0"/><circle cx="100" cy="90" r="44" fill="#F4C0D1"/><circle cx="100" cy="90" r="30" fill="#ED93B1"/><circle cx="100" cy="90" r="17" fill="#D4537E"/><ellipse cx="72" cy="132" rx="24" ry="14" fill="#5DCAA5"/><ellipse cx="130" cy="137" rx="20" ry="12" fill="#5DCAA5"/><rect x="97" y="112" width="6" height="36" rx="3" fill="#3B6D11"/></svg>
-        <div class="photo-label"><span>Red rose</span><small>Boston · Jun 18</small></div>
-      </div>
-      <div class="photo-card" onclick="go('screen-detail','White rose')">
-        <svg viewBox="0 0 200 200"><circle cx="100" cy="100" r="100" fill="#F1EFE8"/><circle cx="100" cy="90" r="44" fill="#D3D1C7"/><circle cx="100" cy="90" r="30" fill="#f8f8f6"/><circle cx="100" cy="90" r="17" fill="#B4B2A9"/><ellipse cx="72" cy="132" rx="24" ry="14" fill="#5DCAA5"/><ellipse cx="130" cy="137" rx="20" ry="12" fill="#5DCAA5"/><rect x="97" y="112" width="6" height="36" rx="3" fill="#3B6D11"/></svg>
-        <div class="photo-label"><span>White rose</span><small>Boston · Jun 17</small></div>
-      </div>
-      <div class="photo-card" onclick="go('screen-detail','Sunflower')">
-        <svg viewBox="0 0 200 200"><circle cx="100" cy="100" r="100" fill="#FAEEDA"/><circle cx="100" cy="88" r="46" fill="#FAC775"/><circle cx="100" cy="88" r="28" fill="#BA7517"/><ellipse cx="72" cy="140" rx="22" ry="13" fill="#5DCAA5"/><ellipse cx="130" cy="145" rx="18" ry="11" fill="#5DCAA5"/><rect x="97" y="114" width="6" height="38" rx="3" fill="#3B6D11"/></svg>
-        <div class="photo-label"><span>Sunflower</span><small>Cambridge · Jun 15</small></div>
-      </div>
-      <div class="photo-card" onclick="go('screen-detail','Lavender')">
-        <svg viewBox="0 0 200 200"><circle cx="100" cy="100" r="100" fill="#EEEDFE"/><rect x="88" y="48" width="24" height="62" rx="12" fill="#AFA9EC"/><rect x="74" y="68" width="20" height="52" rx="10" fill="#7F77DD"/><rect x="106" y="62" width="20" height="58" rx="10" fill="#534AB7"/><ellipse cx="72" cy="148" rx="22" ry="13" fill="#5DCAA5"/><ellipse cx="130" cy="152" rx="18" ry="10" fill="#5DCAA5"/><rect x="97" y="118" width="6" height="38" rx="3" fill="#3B6D11"/></svg>
-        <div class="photo-label"><span>Lavender</span><small>San Fran · Jun 12</small></div>
-      </div>
-      <div class="photo-card" onclick="go('screen-detail','Black-eyed Susan')">
-        <svg viewBox="0 0 200 200"><circle cx="100" cy="100" r="100" fill="#FAEEDA"/><circle cx="100" cy="88" r="42" fill="#EF9F27"/><circle cx="100" cy="88" r="20" fill="#412402"/><ellipse cx="72" cy="138" rx="22" ry="13" fill="#5DCAA5"/><ellipse cx="130" cy="143" rx="18" ry="11" fill="#5DCAA5"/><rect x="97" y="112" width="6" height="38" rx="3" fill="#3B6D11"/></svg>
-        <div class="photo-label"><span>Black-eyed Susan</span><small>Cambridge · Jun 11</small></div>
-      </div>
-      <div class="photo-card" onclick="go('screen-detail','California poppy')">
-        <svg viewBox="0 0 200 200"><circle cx="100" cy="100" r="100" fill="#FAECE7"/><circle cx="100" cy="88" r="42" fill="#F0997B"/><circle cx="100" cy="88" r="24" fill="#D85A30"/><ellipse cx="72" cy="138" rx="22" ry="13" fill="#5DCAA5"/><ellipse cx="130" cy="143" rx="18" ry="11" fill="#5DCAA5"/><rect x="97" y="112" width="6" height="38" rx="3" fill="#3B6D11"/></svg>
-        <div class="photo-label"><span>California poppy</span><small>San Fran · Jun 10</small></div>
-      </div>
-    </div>
+    <div class="photo-grid" id="photo-grid"></div>
     <nav class="bottom-nav">
       <button class="nav-btn active"><i class="ti ti-layout-grid" aria-hidden="true"></i>Home</button>
       <button class="nav-btn" onclick="go('screen-logbook')"><i class="ti ti-books" aria-hidden="true"></i>Logbook</button>
@@ -514,23 +605,7 @@
       <h1 style="margin-top:10px;">Logbook</h1>
       <p>Collections by location</p>
     </div>
-    <div class="list-scroll">
-      <div class="list-item" onclick="go('screen-location','Boston')">
-        <div class="list-icon"><i class="ti ti-building" aria-hidden="true"></i></div>
-        <div class="list-text"><h3>Boston</h3><p>6 plants · Last added Jun 18</p></div>
-        <i class="ti ti-chevron-right list-arrow" aria-hidden="true"></i>
-      </div>
-      <div class="list-item" onclick="go('screen-location','Cambridge')">
-        <div class="list-icon"><i class="ti ti-building-arch" aria-hidden="true"></i></div>
-        <div class="list-text"><h3>Cambridge</h3><p>3 plants · Last added Jun 15</p></div>
-        <i class="ti ti-chevron-right list-arrow" aria-hidden="true"></i>
-      </div>
-      <div class="list-item" onclick="go('screen-location','San Fran')">
-        <div class="list-icon"><i class="ti ti-bridge" aria-hidden="true"></i></div>
-        <div class="list-text"><h3>San Francisco</h3><p>3 plants · Last added Jun 12</p></div>
-        <i class="ti ti-chevron-right list-arrow" aria-hidden="true"></i>
-      </div>
-    </div>
+    <div class="list-scroll" id="logbook-list"></div>
     <nav class="bottom-nav">
       <button class="nav-btn" onclick="go('screen-home')"><i class="ti ti-layout-grid" aria-hidden="true"></i>Home</button>
       <button class="nav-btn active"><i class="ti ti-books" aria-hidden="true"></i>Logbook</button>
@@ -579,6 +654,7 @@
       <button class="back-btn" id="detail-back-btn"><i class="ti ti-arrow-left"></i>Back</button>
     </div>
     <div class="detail-hero">
+      <img id="detail-photo" class="detail-photo" alt="" hidden>
       <div class="detail-circle" id="detail-circle">
         <svg id="detail-svg" viewBox="0 0 100 100"></svg>
       </div>
@@ -670,11 +746,14 @@
 
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 const plants = {
   'Red rose': {
+    label: 'Rosa Rubiginosa',
     sci: 'Rosa rubiginosa',
     loc: 'Boston',
+    photoUrl: 'https://5.imimg.com/data5/SELLER/Default/2023/12/371984729/OG/DM/VI/130124571/all-type-road-said-trees.jpg',
     tags: [['Rose','tag-pink'],['Perennial','tag-green'],['Fragrant','tag-amber']],
     about: 'A classic garden rose known for its deep crimson petals and sweet, heady fragrance. Blooms from late spring through summer and thrives in temperate climates.',
     care: 'Full sun, well-drained soil. Water at the base to avoid fungal issues. Prune in early spring. Watch for aphids and black spot.',
@@ -684,6 +763,7 @@ const plants = {
   'White rose': {
     sci: 'Rosa alba',
     loc: 'Boston',
+    photoUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ1_mbmTWYqGUN1b1ATA5EqCuUFC269hpcvGlLK1-kiMg&s=10',
     tags: [['Rose','tag-pink'],['Perennial','tag-green'],['Classic','tag-purple']],
     about: 'Elegant white blooms with a delicate, sweet fragrance. A timeless choice for gardens and floral arrangements alike. Very hardy and disease-resistant.',
     care: 'Full sun to part shade. Regular watering. Deadhead spent blooms to encourage reblooming through the season.',
@@ -693,6 +773,7 @@ const plants = {
   'Sunflower': {
     sci: 'Helianthus annuus',
     loc: 'Cambridge',
+    photoUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQdkRPARI6wlO9flDE5bA9XLlxAbF_nQL9XhBnb6Zda8A&s=10',
     tags: [['Annual','tag-amber'],['Pollinator','tag-green'],['Tall','tag-purple']],
     about: 'Iconic bright yellow blooms that track the sun across the sky. Grows tall and fast — a great choice for borders, cutting gardens, and attracting pollinators.',
     care: 'Full sun. Deep watering once a week. Support with stakes when tall. Allow seed heads to dry for birds and self-seeding.',
@@ -702,15 +783,18 @@ const plants = {
   'Lavender': {
     sci: 'Lavandula angustifolia',
     loc: 'San Fran',
+    photoUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTWlhq8aMrieMSiW-a_mMQq9aYWozqpDxazOfwLQfyfByrHGq_we3E-JRA&s=10',
     tags: [['Herb','tag-purple'],['Aromatic','tag-amber'],['Drought-tolerant','tag-green']],
     about: 'Fragrant purple spikes beloved by bees and butterflies. Thrives in sunny, dry spots and makes excellent dried arrangements and sachets.',
     care: 'Full sun. Sandy, well-drained soil — avoid clay. Minimal watering once established. Trim back by a third after flowering to keep bushy.',
     heroBg: '#EEEDFE', heroBorder: '#CECBF6',
     svg: `<rect x="44" y="20" width="12" height="38" rx="6" fill="#AFA9EC"/><rect x="34" y="32" width="10" height="32" rx="5" fill="#7F77DD"/><rect x="56" y="27" width="10" height="36" rx="5" fill="#534AB7"/><ellipse cx="34" cy="78" rx="16" ry="9" fill="#5DCAA5"/><ellipse cx="66" cy="80" rx="14" ry="8" fill="#5DCAA5"/><rect x="48" y="66" width="4" height="18" rx="2" fill="#3B6D11"/>`,
   },
+  
   'Black-eyed Susan': {
     sci: 'Rudbeckia hirta',
     loc: 'Cambridge',
+    photoUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTp6UYphT4qnHT_Tp5-Lhaq1VD1M6h-F-mEfSlpA6Aa4g&s=10',
     tags: [['Wildflower','tag-amber'],['Pollinator','tag-green'],['Native','tag-purple']],
     about: 'A cheerful native wildflower with golden-yellow petals and a dark brown center. Extremely hardy and long-blooming, from summer through fall.',
     care: 'Full sun. Tolerates poor soil and drought once established. Deadhead to extend blooming. Self-seeds freely — allow some to naturalize.',
@@ -720,6 +804,7 @@ const plants = {
   'California poppy': {
     sci: 'Eschscholzia californica',
     loc: 'San Fran',
+    photoUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR0mEusyLBmGnUr2-20w8Tcz-em_zYFXGhbf1M7ywdbdA&s=10',
     tags: [['Native','tag-green'],['Annual','tag-amber'],['Drought-tolerant','tag-pink']],
     about: 'California\'s state flower. Silky orange-gold petals that open in sunlight and close at night. Naturalizes easily and re-seeds prolifically.',
     care: 'Full sun. Direct sow in place — dislikes transplanting. Very drought tolerant. Thin seedlings to 6 inches apart. No fertilizer needed.',
@@ -755,6 +840,30 @@ const plants = {
   },
 };
 
+const homeSightings = [
+  'Red rose',
+  'White rose',
+  'Sunflower',
+  'Lavender',
+  'Black-eyed Susan',
+  'California poppy',
+];
+
+const locations = {
+  'Boston': {
+    displayName: 'Boston',
+    photoUrl: 'https://www.trolleytours.com/wp-content/uploads/2023/11/landmarks-in-boston.jpg',
+  },
+  'Cambridge': {
+    displayName: 'Cambridge',
+    photoUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTf5vULGSN2n0jCYF5zd84fAb_5_gfwu_TgKO3O4Es2rA&s',
+  },
+  'San Fran': {
+    displayName: 'San Francisco',
+    photoUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTOmAQ35uo3qh6pkJpKZpiVsUWnGQBmVPfmVCC_nhkwT4rLQrdFnIstU1o&s=10',
+  },
+};
+
 const locationPlants = {
   'Boston': ['Red rose','White rose','Climbing hydrangea'],
   'Cambridge': ['Sunflower','Black-eyed Susan','Coneflower'],
@@ -770,6 +879,66 @@ const sightings = [
 
 let photoEntries = [];
 let prevScreen = 'screen-home';
+
+function plantLabel(name) {
+  const p = plants[name];
+  return (p && p.label) ? p.label : name;
+}
+
+function formatLoc(loc) {
+  return loc === 'San Fran' ? 'San Francisco' : loc;
+}
+
+function plantImage(p) {
+  return (p && (p.photoUrl || p.photo)) || '';
+}
+
+function plantThumbHtml(p) {
+  const img = plantImage(p);
+  if (img) {
+    return `<img src="${img}" alt="">`;
+  }
+  return `<svg viewBox="0 0 100 100">${p.svg || ''}</svg>`;
+}
+
+function renderHomeGrid() {
+  const grid = document.getElementById('photo-grid');
+  if (!grid) return;
+
+  grid.innerHTML = homeSightings.map(name => {
+    const p = plants[name];
+    if (!p) return '';
+
+    const label = plantLabel(name);
+    const loc = p.loc;
+    const img = plantImage(p);
+    const media = img
+      ? `<img src="${img}" alt="${label}">`
+      : `<svg viewBox="0 0 200 200">${p.svg || ''}</svg>`;
+
+    return `<div class="photo-card" onclick="go('screen-detail','${name}')">
+      ${media}
+      <div class="photo-label"><span>${label}</span><small>${loc}</small></div>
+    </div>`;
+  }).join('');
+}
+
+function renderLogbook() {
+  const list = document.getElementById('logbook-list');
+  if (!list) return;
+
+  list.innerHTML = Object.keys(locations).map(loc => {
+    const info = locations[loc];
+    const count = (locationPlants[loc] || []).length;
+    const label = count === 1 ? '1 plant' : `${count} plants`;
+
+    return `<div class="list-item" onclick="go('screen-location','${loc}')">
+      <div class="list-icon"><img src="${info.photoUrl}" alt="${info.displayName}"></div>
+      <div class="list-text"><h3>${info.displayName}</h3><p>${label}</p></div>
+      <i class="ti ti-chevron-right list-arrow" aria-hidden="true"></i>
+    </div>`;
+  }).join('');
+}
 
 function go(screenId, arg) {
   const current = document.querySelector('.screen.active');
@@ -809,7 +978,7 @@ function renderLocation(loc) {
   const el = document.getElementById('loc-list');
   el.innerHTML = names.map(name => {
     const p = plants[name] || {};
-    const thumb = p.photo ? `<img src="${p.photo}" alt="${name} photo">` : `<svg viewBox="0 0 100 100">${p.svg || ''}</svg>`;
+    const thumb = plantThumbHtml(p);
     const tags = (p.tags || []).slice(0, 2).map(([t, cls]) => `<span class="tag ${cls}">${t}</span>`).join('');
     return `<div class="plant-row" onclick="go('screen-detail','${name}'); document.getElementById('detail-back-btn').onclick = () => go('screen-location','${loc}');">
       <div class="plant-thumb">${thumb}</div>
@@ -829,19 +998,25 @@ function renderDetail(name) {
   const p = plants[name];
   if (!p) return;
 
-  document.getElementById('detail-name').textContent = name;
+  document.getElementById('detail-name').textContent = plantLabel(name);
   document.getElementById('detail-sci').textContent = p.sci || '';
-  document.getElementById('detail-loc').textContent = p.loc === 'San Fran' ? 'San Francisco' : p.loc;
+  document.getElementById('detail-loc').textContent = formatLoc(p.loc);
   document.getElementById('detail-about').textContent = p.about || 'No notes yet.';
   document.getElementById('detail-care').textContent = p.care || 'No care notes yet.';
 
+  const photo = document.getElementById('detail-photo');
   const circle = document.getElementById('detail-circle');
-  if (p.photo) {
-    circle.innerHTML = `<img src="${p.photo}" alt="${name} photo" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
-    circle.style.background = 'none';
-    circle.style.borderColor = 'transparent';
+  const detailImg = plantImage(p);
+  if (detailImg) {
+    photo.src = detailImg;
+    photo.alt = plantLabel(name);
+    photo.hidden = false;
+    circle.hidden = true;
   } else {
-    circle.innerHTML = `<svg id="detail-svg" viewBox="0 0 100 100">${p.svg || ''}</svg>`;
+    photo.hidden = true;
+    photo.removeAttribute('src');
+    circle.hidden = false;
+    document.getElementById('detail-svg').innerHTML = p.svg || '';
     circle.style.background = p.heroBg;
     circle.style.borderColor = p.heroBorder;
   }
@@ -1042,9 +1217,17 @@ function savePlantInfo() {
   collections.forEach(c => {
     if (!locationPlants[c]) locationPlants[c] = [];
     locationPlants[c].unshift(name);
+    if (!locations[c]) {
+      locations[c] = {
+        displayName: formatLoc(c),
+        photoUrl: 'https://placehold.co/96x96/f5f5f0/6b6b67?text=' + encodeURIComponent(formatLoc(c)),
+      };
+    }
   });
 
-  addPhotoCard(entry);
+  homeSightings.unshift(name);
+  renderHomeGrid();
+  renderLogbook();
   closeCameraModal();
 }
 
@@ -1062,25 +1245,91 @@ document.getElementById('upload-input').addEventListener('change', (e) => {
   e.target.value = '';
 });
 
-function addPhotoCard(entry) {
-  const grid = document.querySelector('#screen-home .photo-grid');
-  const card = document.createElement('div');
-  card.className = 'photo-card';
-  card.dataset.photoId = entry.photoId;
-  card.onclick = () => {
-    go('screen-detail', entry.name);
-    document.getElementById('detail-back-btn').onclick = () => go('screen-home');
-  };
-  const date = new Date(entry.uploadedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-  const loc = entry.collections[0] === 'San Fran' ? 'San Francisco' : (entry.collections[0] || 'Unsorted');
-  card.innerHTML = `
-    <img src="${entry.dataUrl}" alt="${entry.name} photo">
-    <div class="photo-label"><span>${entry.name}</span><small>${loc} · ${date}</small></div>
-  `;
-  grid.insertBefore(card, grid.firstChild);
+document.getElementById('detail-back-btn').onclick = () => go('screen-home');
+renderHomeGrid();
+renderLogbook();
+
+/* ---------------- Supabase auth ---------------- */
+const SUPABASE_URL = 'https://eelluswcuwmbrospgloz.supabase.co';
+const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_SnPjmUDSGxdiK-Bqu_rezA_5olX1K3W';
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+
+let authMode = 'login';
+
+function toggleAuthMode() {
+  authMode = authMode === 'login' ? 'signup' : 'login';
+  const isLogin = authMode === 'login';
+  document.getElementById('auth-subtitle').textContent = isLogin ? 'Sign in to your garden' : 'Create your account';
+  document.getElementById('auth-submit-btn').textContent = isLogin ? 'Sign in' : 'Sign up';
+  document.getElementById('auth-toggle-text').textContent = isLogin ? "Don't have an account?" : 'Already have an account?';
+  document.getElementById('auth-toggle-btn').textContent = isLogin ? 'Sign up' : 'Sign in';
+  document.getElementById('auth-password').setAttribute('autocomplete', isLogin ? 'current-password' : 'new-password');
+  setAuthMsg('');
 }
 
-document.getElementById('detail-back-btn').onclick = () => go('screen-home');
+function setAuthMsg(text, type) {
+  const el = document.getElementById('auth-msg');
+  el.textContent = text || '';
+  el.className = 'auth-msg' + (type ? ' auth-msg-' + type : '');
+}
+
+async function submitAuth(e) {
+  e.preventDefault();
+  const email = document.getElementById('auth-email').value.trim();
+  const password = document.getElementById('auth-password').value;
+  const btn = document.getElementById('auth-submit-btn');
+  const label = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = 'Please wait…';
+  setAuthMsg('');
+
+  try {
+    if (authMode === 'signup') {
+      const { data, error } = await supabaseClient.auth.signUp({ email, password });
+      if (error) throw error;
+      // With email confirmation OFF, a session is returned and onAuthStateChange
+      // signs the user straight in. If confirmation is ON, no session is returned.
+      if (!data.session) {
+        setAuthMsg('Check your email to confirm your account, then sign in.', 'info');
+      }
+    } else {
+      const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+      if (error) throw error;
+    }
+  } catch (err) {
+    setAuthMsg(err.message || 'Something went wrong. Please try again.', 'error');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = label;
+  }
+  return false;
+}
+
+async function logout() {
+  await supabaseClient.auth.signOut();
+}
+
+function showAuthScreen() {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-auth').classList.add('active');
+  const form = document.getElementById('auth-form');
+  if (form) form.reset();
+  if (authMode !== 'login') toggleAuthMode();
+  setAuthMsg('');
+}
+
+function showHomeScreen() {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-home').classList.add('active');
+}
+
+supabaseClient.auth.onAuthStateChange((event, session) => {
+  if (session) {
+    showHomeScreen();
+  } else {
+    showAuthScreen();
+  }
+});
 </script>
 </body>
 </html>
